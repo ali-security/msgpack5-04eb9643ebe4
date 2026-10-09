@@ -1,21 +1,21 @@
 'use strict'
 
-const Buffer = require('safe-buffer').Buffer
-const test = require('tape').test
-const msgpack = require('../')
-const bl = require('bl')
+var Buffer = require('safe-buffer').Buffer
+var test = require('tape').test
+var msgpack = require('../')
+var bl = require('bl')
 
 test('encoding/decoding 8-bits big-endian signed integers', function (t) {
-  const encoder = msgpack()
-  const allNum = []
+  var encoder = msgpack()
+  var allNum = []
 
-  for (let i = 33; i <= 128; i++) {
+  for (var i = 33; i <= 128; i++) {
     allNum.push(-i)
   }
 
   allNum.forEach(function (num) {
     t.test('encoding ' + num, function (t) {
-      const buf = encoder.encode(num)
+      var buf = encoder.encode(num)
       t.equal(buf.length, 2, 'must have 2 bytes')
       t.equal(buf[0], 0xd0, 'must have the proper header')
       t.equal(buf.readInt8(1), num, 'must decode correctly')
@@ -23,7 +23,7 @@ test('encoding/decoding 8-bits big-endian signed integers', function (t) {
     })
 
     t.test('decoding ' + num, function (t) {
-      const buf = Buffer.allocUnsafe(3)
+      var buf = Buffer.allocUnsafe(3)
       buf[0] = 0xd0
       buf.writeInt8(num, 1)
       t.equal(encoder.decode(buf), num, 'must decode correctly')
@@ -40,11 +40,11 @@ test('encoding/decoding 8-bits big-endian signed integers', function (t) {
 })
 
 test('decoding an incomplete 8-bits big-endian signed integer', function (t) {
-  const encoder = msgpack()
-  let buf = Buffer.allocUnsafe(1)
+  var encoder = msgpack()
+  var buf = Buffer.allocUnsafe(1)
   buf[0] = 0xd0
   buf = bl().append(buf)
-  const origLength = buf.length
+  var origLength = buf.length
   t.throws(function () {
     encoder.decode(buf)
   }, encoder.IncompleteBufferError, 'must throw IncompleteBufferError')

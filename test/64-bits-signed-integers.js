@@ -1,13 +1,13 @@
 'use strict'
 
-const Buffer = require('safe-buffer').Buffer
-const test = require('tape').test
-const msgpack = require('../')
-const bl = require('bl')
+var Buffer = require('safe-buffer').Buffer
+var test = require('tape').test
+var msgpack = require('../')
+var bl = require('bl')
 
 test('encoding/decoding 64-bits big-endian signed integers', function (t) {
-  const encoder = msgpack()
-  const table = [
+  var encoder = msgpack()
+  var table = [
     { num: -9007199254740991, hi: 0xffe00000, lo: 0x00000001 },
     { num: -4294967297, hi: 0xfffffffe, lo: 0xffffffff },
     { num: -4294967296, hi: 0xffffffff, lo: 0x00000000 },
@@ -17,7 +17,7 @@ test('encoding/decoding 64-bits big-endian signed integers', function (t) {
 
   table.forEach(function (testCase) {
     t.test('encoding ' + testCase.num, function (t) {
-      const buf = encoder.encode(testCase.num)
+      var buf = encoder.encode(testCase.num)
       t.equal(buf.length, 9, 'must have 9 bytes')
       t.equal(buf[0], 0xd3, 'must have the proper header')
       t.equal(buf.readUInt32BE(1), testCase.hi, 'hi word must be properly written')
@@ -35,11 +35,11 @@ test('encoding/decoding 64-bits big-endian signed integers', function (t) {
 })
 
 test('decoding an incomplete 64-bits big-endian signed integer', function (t) {
-  const encoder = msgpack()
-  let buf = Buffer.allocUnsafe(8)
+  var encoder = msgpack()
+  var buf = Buffer.allocUnsafe(8)
   buf[0] = 0xd3
   buf = bl().append(buf)
-  const origLength = buf.length
+  var origLength = buf.length
   t.throws(function () {
     encoder.decode(buf)
   }, encoder.IncompleteBufferError, 'must throw IncompleteBufferError')

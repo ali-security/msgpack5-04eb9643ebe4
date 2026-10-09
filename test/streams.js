@@ -1,17 +1,17 @@
 'use strict'
 
-const Buffer = require('safe-buffer').Buffer
-const test = require('tape').test
-const msgpack = require('../')
-const BufferList = require('bl')
+var Buffer = require('safe-buffer').Buffer
+var test = require('tape').test
+var msgpack = require('../')
+var BufferList = require('bl')
 
 test('must send an object through', function (t) {
   t.plan(1)
 
-  const pack = msgpack()
-  const encoder = pack.encoder()
-  const decoder = pack.decoder()
-  const data = { hello: 'world' }
+  var pack = msgpack()
+  var encoder = pack.encoder()
+  var decoder = pack.decoder()
+  var data = { hello: 'world' }
 
   encoder.pipe(decoder)
 
@@ -23,10 +23,10 @@ test('must send an object through', function (t) {
 })
 
 test('must send three objects through', function (t) {
-  const pack = msgpack()
-  const encoder = pack.encoder()
-  const decoder = pack.decoder()
-  const data = [
+  var pack = msgpack()
+  var encoder = pack.encoder()
+  var decoder = pack.decoder()
+  var data = [
     { hello: 1 },
     { hello: 2 },
     { hello: 3 }
@@ -46,10 +46,10 @@ test('must send three objects through', function (t) {
 })
 
 test('end-to-end', function (t) {
-  const pack = msgpack()
-  const encoder = pack.encoder()
-  const decoder = pack.decoder()
-  const data = [
+  var pack = msgpack()
+  var encoder = pack.encoder()
+  var decoder = pack.decoder()
+  var data = [
     { hello: 1 },
     { hello: 2 },
     { hello: 3 }
@@ -71,9 +71,9 @@ test('end-to-end', function (t) {
 test('encoding error wrapped', function (t) {
   t.plan(1)
 
-  const pack = msgpack()
-  const encoder = pack.encoder()
-  const data = new MyType()
+  var pack = msgpack()
+  var encoder = pack.encoder()
+  var data = new MyType()
 
   function MyType () {
   }
@@ -97,10 +97,10 @@ test('encoding error wrapped', function (t) {
 test('decoding error wrapped', function (t) {
   t.plan(1)
 
-  const pack = msgpack()
-  const encoder = pack.encoder()
-  const decoder = pack.decoder()
-  const data = new MyType()
+  var pack = msgpack()
+  var encoder = pack.encoder()
+  var decoder = pack.decoder()
+  var data = new MyType()
 
   function MyType () {
   }
@@ -127,10 +127,10 @@ test('decoding error wrapped', function (t) {
 test('decoding error wrapped', function (t) {
   t.plan(1)
 
-  const pack = msgpack()
-  const encoder = pack.encoder({ header: false })
-  const decoder = pack.decoder({ header: false })
-  const data = new MyType()
+  var pack = msgpack()
+  var encoder = pack.encoder({ header: false })
+  var decoder = pack.decoder({ header: false })
+  var data = new MyType()
 
   function MyType () {
   }
@@ -155,10 +155,10 @@ test('decoding error wrapped', function (t) {
 })
 
 test('concatenated buffers work', function (t) {
-  const pack = msgpack()
-  const encoder = pack.encoder()
-  const decoder = pack.decoder()
-  const data = [
+  var pack = msgpack()
+  var encoder = pack.encoder()
+  var decoder = pack.decoder()
+  var data = [
     { hello: 1 },
     { hello: 2 },
     { hello: 3 }
@@ -166,7 +166,7 @@ test('concatenated buffers work', function (t) {
 
   t.plan(data.length)
 
-  const bl = new BufferList()
+  var bl = new BufferList()
   encoder.on('data', bl.append.bind(bl))
 
   data.forEach(encoder.write.bind(encoder))
@@ -176,86 +176,9 @@ test('concatenated buffers work', function (t) {
   })
 
   encoder.once('finish', function () {
-    const buf = bl.slice()
+    var buf = bl.slice()
     decoder.write(buf)
   })
 
-  encoder.end()
-})
-
-test('nil processing works', function (t) {
-  t.plan(3)
-
-  const pack = msgpack()
-  const decoder = pack.decoder({ wrap: true })
-  let decodedItemIndex = 0
-
-  decoder.on('data', function (chunk) {
-    decodedItemIndex++
-    t.deepEqual(chunk.value, decodedItemIndex === 1 ? null : false)
-  })
-
-  decoder.on('end', function () {
-    t.equal(decodedItemIndex, 2)
-  })
-
-  decoder.write(Buffer.from([0xc0, 0xc2]))
-  decoder.end()
-})
-
-test('encoder wrap mode works', function (t) {
-  t.plan(1)
-
-  const pack = msgpack()
-  const encoder = pack.encoder({ wrap: true })
-  const decoder = pack.decoder()
-  const data = { hello: 'world' }
-  const wrappedData = { value: data }
-
-  encoder.pipe(decoder)
-
-  decoder.on('data', function (chunk) {
-    t.deepEqual(chunk, data)
-  })
-
-  encoder.end(wrappedData)
-})
-
-test('encoder/decoder wrap mode must send an object through', function (t) {
-  t.plan(1)
-
-  const pack = msgpack()
-  const encoder = pack.encoder({ wrap: true })
-  const decoder = pack.decoder({ wrap: true })
-  const data = { value: { hello: 'world' } }
-
-  encoder.pipe(decoder)
-
-  decoder.on('data', function (chunk) {
-    t.deepEqual(chunk, data)
-  })
-
-  encoder.end(data)
-})
-
-test('encoder pack null', function (t) {
-  t.plan(2)
-  const pack = msgpack()
-  const encoder = pack.encoder({ wrap: true })
-  const decoder = pack.decoder({ wrap: true })
-
-  encoder.pipe(decoder)
-
-  let decodedItemIndex = 0
-  decoder.on('data', function (chunk) {
-    decodedItemIndex++
-    t.deepEqual(chunk.value, null)
-  })
-
-  decoder.on('end', function () {
-    t.equal(decodedItemIndex, 1)
-  })
-
-  encoder.write({ value: null })
   encoder.end()
 })

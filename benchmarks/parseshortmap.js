@@ -1,9 +1,11 @@
-const msgpack = require('../')()
-const bl = require('bl')
-const msg = bl(msgpack.encode({ hello: 'world' }))
-const decode = msgpack.decode
-const max = 1000000
-let i
+var msgpack = require('../')()
+var bl = require('bl')
+var msg = bl(msgpack.encode({ hello: 'world' }))
+var decode = msgpack.decode
+var max = 1000000
+var start
+var stop
+var i
 
 function run () {
   for (i = 0; i < max; i++) {
@@ -14,8 +16,8 @@ function run () {
 // preheat
 run()
 
-const start = Date.now()
+start = Date.now()
 run()
-const stop = Date.now()
+stop = Date.now()
 console.log('time', stop - start)
 console.log('decode/s', max / (stop - start) * 1000)

@@ -1,11 +1,11 @@
 'use strict'
 
-const Buffer = require('safe-buffer').Buffer
-const test = require('tape').test
-const msgpack = require('../')
+var Buffer = require('safe-buffer').Buffer
+var test = require('tape').test
+var msgpack = require('../')
 
 test('encode/decode null', function (t) {
-  const encoder = msgpack()
+  var encoder = msgpack()
 
   t.equal(encoder.encode(null)[0], 0xc0, 'encode null as 0xc0')
   t.equal(encoder.encode(null).length, 1, 'encode a buffer of length 1')

@@ -1,4 +1,4 @@
-msgpack5&nbsp;&nbsp;[![CI](https://github.com/mcollina/msgpack5/workflows/CI/badge.svg)](https://github.com/mcollina/msgpack5/actions?query=workflow%3ACI)
+msgpack5&nbsp;&nbsp;[![Build Status](https://travis-ci.org/mcollina/msgpack5.png)](https://travis-ci.org/mcollina/msgpack5)
 ========
 
 A msgpack v5 implementation for node.js and the browser, with extension point support.
@@ -107,10 +107,7 @@ encoded.
 options:
 
 - `forceFloat64`, a boolean to that forces all floats to be encoded as 64-bits floats. Defaults to false.
-- `sortKeys`, a boolean to force a determinate keys order
 - `compatibilityMode`, a boolean that enables "compatibility mode" which doesn't use str 8 format. Defaults to false.
-- `disableTimestampEncoding`, a boolean that when set disables the encoding of Dates into the [timestamp extension type](https://github.com/msgpack/msgpack/blob/master/spec.md#timestamp-extension-type). Defaults to false.
-- `preferMap`, a boolean that forces all maps to be decoded to `Map`s rather than plain objects. This ensures that `decode(encode(new Map())) instanceof Map` and that iteration order is preserved. Defaults to false.
 - `protoAction`, a string which can be `error|ignore|remove` that determines what happens when decoding a plain object with a `__proto__` property which would cause prototype poisoning. `error` (default) throws an error, `remove` removes the property, `ignore` (not recommended) allows the property, thereby causing prototype poisoning on the decoded object.
 
 -------------------------------------------------------
@@ -180,24 +177,16 @@ This is just a commodity that calls
 -------------------------------------------------------
 <a name="encoder"></a>
 
-### encoder(options)
+### encoder()
 
 Builds a stream in object mode that encodes msgpack.
-
-Supported options:
-* `wrap`, objects should be passed to encoder in wrapped object {value: data}. Wrap option should be used if you need to pass null to encoder.
-
 
 -------------------------------------------------------
 <a name="decoder"></a>
 
-### decoder(options)
+### decoder()
 
 Builds a stream in object mode that decodes msgpack.
-
-Supported options:
-* `wrap`, decoded objects returned in wrapped object {value: data}. Wrap option should be used if stream contains msgpack nil.
-
 
 LevelUp Support
 ---------------

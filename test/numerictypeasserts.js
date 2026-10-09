@@ -1,10 +1,10 @@
 'use strict'
 
-const test = require('tape').test
-const msgpack = require('../')
+var test = require('tape').test
+var msgpack = require('../')
 
 test('custom type registeration assertions', function (t) {
-  const encoder = msgpack()
+  var encoder = msgpack()
 
   function Type0 (value) {
     this.value = value
@@ -37,8 +37,8 @@ test('custom type registeration assertions', function (t) {
     encoder.register(-1, TypeNeg, typeNegEncode, typeNegDecode)
   }, undefined, 'A type registered as a negative value should throw')
 
-  const encoded = encoder.encode(new Type0('hi'))
-  let decoded
+  var encoded = encoder.encode(new Type0('hi'))
+  var decoded
   t.equal(encoded.readUInt8(1), 0x0, 'must use the custom type assigned')
   t.doesNotThrow(function () {
     decoded = encoder.decode(encoded)

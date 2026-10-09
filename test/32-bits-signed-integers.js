@@ -1,15 +1,15 @@
 'use strict'
 
-const Buffer = require('safe-buffer').Buffer
-const test = require('tape').test
-const msgpack = require('../')
-const bl = require('bl')
+var Buffer = require('safe-buffer').Buffer
+var test = require('tape').test
+var msgpack = require('../')
+var bl = require('bl')
 
 test('encoding/decoding 32-bits big-endian signed integers', function (t) {
-  const encoder = msgpack()
-  const allNum = []
+  var encoder = msgpack()
+  var allNum = []
 
-  for (let i = 32769; i < 214748364; i += 10235023) {
+  for (var i = 32769; i < 214748364; i += 10235023) {
     allNum.push(-i)
   }
 
@@ -17,7 +17,7 @@ test('encoding/decoding 32-bits big-endian signed integers', function (t) {
 
   allNum.forEach(function (num) {
     t.test('encoding ' + num, function (t) {
-      const buf = encoder.encode(num)
+      var buf = encoder.encode(num)
       t.equal(buf.length, 5, 'must have 5 bytes')
       t.equal(buf[0], 0xd2, 'must have the proper header')
       t.equal(buf.readInt32BE(1), num, 'must decode correctly')
@@ -25,7 +25,7 @@ test('encoding/decoding 32-bits big-endian signed integers', function (t) {
     })
 
     t.test('decoding ' + num, function (t) {
-      const buf = Buffer.allocUnsafe(5)
+      var buf = Buffer.allocUnsafe(5)
       buf[0] = 0xd2
       buf.writeInt32BE(num, 1)
       t.equal(encoder.decode(buf), num, 'must decode correctly')
@@ -42,11 +42,11 @@ test('encoding/decoding 32-bits big-endian signed integers', function (t) {
 })
 
 test('decoding an incomplete 32-bits big-endian integer', function (t) {
-  const encoder = msgpack()
-  let buf = Buffer.allocUnsafe(4)
+  var encoder = msgpack()
+  var buf = Buffer.allocUnsafe(4)
   buf[0] = 0xd2
   buf = bl().append(buf)
-  const origLength = buf.length
+  var origLength = buf.length
   t.throws(function () {
     encoder.decode(buf)
   }, encoder.IncompleteBufferError, 'must throw IncompleteBufferError')

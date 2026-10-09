@@ -1,13 +1,13 @@
 'use strict'
 
-const Buffer = require('safe-buffer').Buffer
-const test = require('tape').test
-const msgpack = require('../')
-const bl = require('bl')
+var Buffer = require('safe-buffer').Buffer
+var test = require('tape').test
+var msgpack = require('../')
+var bl = require('bl')
 
 function build (size, obj) {
-  const array = []
-  let i
+  var array = []
+  var i
 
   for (i = 0; i < size; i++) {
     array.push(obj)
@@ -17,8 +17,8 @@ function build (size, obj) {
 }
 
 function computeLength (array) {
-  let length = 1 // the header
-  let multi = 1
+  var length = 1 // the header
+  var multi = 1
 
   if (array[0] && typeof array[0] === 'string') {
     multi += array[0].length
@@ -30,9 +30,9 @@ function computeLength (array) {
 }
 
 test('encode/decode arrays up to 15 elements', function (t) {
-  const encoder = msgpack()
-  const all = []
-  let i
+  var encoder = msgpack()
+  var all = []
+  var i
 
   for (i = 0; i < 16; i++) {
     all.push(build(i, 42))
@@ -44,7 +44,7 @@ test('encode/decode arrays up to 15 elements', function (t) {
 
   all.forEach(function (array) {
     t.test('encoding an array with ' + array.length + ' elements of ' + array[0], function (t) {
-      const buf = encoder.encode(array)
+      var buf = encoder.encode(array)
       // the array is full of 1-byte integers
       t.equal(buf.length, computeLength(array), 'must have the right length')
       t.equal(buf.readUInt8(0) & 0xf0, 0x90, 'must have the proper header')
@@ -62,20 +62,20 @@ test('encode/decode arrays up to 15 elements', function (t) {
 })
 
 test('decoding an incomplete array', function (t) {
-  const encoder = msgpack()
+  var encoder = msgpack()
 
-  const array = ['a', 'b', 'c']
-  const size = computeLength(array)
-  let buf = Buffer.allocUnsafe(size)
+  var array = ['a', 'b', 'c']
+  var size = computeLength(array)
+  var buf = Buffer.allocUnsafe(size)
   buf[0] = 0x90 | array.length + 2 // set bigger size
-  let pos = 1
-  for (let i = 0; i < array.length; i++) {
-    const obj = encoder.encode(array[i], true)
+  var pos = 1
+  for (var i = 0; i < array.length; i++) {
+    var obj = encoder.encode(array[i], true)
     obj.copy(buf, pos)
     pos += obj.length
   }
   buf = bl().append(buf)
-  const origLength = buf.length
+  var origLength = buf.length
   t.throws(function () {
     encoder.decode(buf)
   }, encoder.IncompleteBufferError, 'must throw IncompleteBufferError')
