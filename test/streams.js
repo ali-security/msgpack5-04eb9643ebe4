@@ -182,3 +182,34 @@ test('concatenated buffers work', function (t) {
 
   encoder.end()
 })
+
+// lib/ and the browser bundles in dist/ built from it
+var implementations = ['../', '../dist/msgpack5', '../dist/msgpack5.min']
+
+implementations.forEach(function (impl) {
+  test(impl + ': map32 header split across chunks', function (t) {
+    t.plan(2)
+
+    var decoder = require(impl)().decoder()
+    var errored = false
+
+    decoder.on('data', function () {
+      t.fail('must not decode a map32')
+    })
+
+    decoder.on('error', function (err) {
+      errored = true
+      t.ok(/map too big to decode in JS/.test(err.message), 'must refuse the complete map32')
+    })
+
+    var header = [0xdf, 0x00, 0x00, 0x00]
+    header.forEach(function (byte) {
+      decoder.write(Buffer.from([byte]))
+    })
+
+    setImmediate(function () {
+      t.notOk(errored, 'must wait for the rest of the header')
+      decoder.write(Buffer.from([0x00]))
+    })
+  })
+})
